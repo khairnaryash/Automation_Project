@@ -1,6 +1,7 @@
 package com.automation.reporter.customAssert;
 
 import com.automation.reporter.ExtentReporter;
+import com.automation.reporter.Log;
 import com.aventstack.extentreports.Status;
 import org.testng.asserts.Assertion;
 import org.testng.asserts.IAssert;
@@ -18,10 +19,13 @@ public class CustomAssertion extends Assertion {
 
     public void assertEquals(final String actual, final String expected, final String message) {
         if (actual.equals(expected))
-            ExtentReporter.getTest().log(Status.PASS, String.format("<b>%s </b><br> Expected :%s, actual :%s", message, expected, actual));
-        else
+        { ExtentReporter.getTest().log(Status.PASS, String.format("<b>%s </b><br> Expected :%s, actual :%s", message, expected, actual));
+            Log.info(String.format("%s ,Expected :%s, actual :%s", message, expected, actual));
+        }
+        else {
             ExtentReporter.getTest().log(Status.FAIL, String.format("<b>%s </b><br> Expected :%s, actual :%s", message, expected, actual));
-
+            Log.error(String.format("%s ,Expected :%s, actual :%s", message, expected, actual));
+        }
         doAssert(new SimpleAssert<String>(actual, expected, message) {
             @Override
             public void doAssert() {
