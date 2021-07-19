@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="My Suite" data-provider-thread-count="2" thread-count="2" >
+
+    <listeners>
+        <listener class-name="com.automation.reporter.ExtentReporter"/>
+    </listeners>
+    <test name="My Test">
+        <parameter name="environment" value="DEV"/>
+
+        <parameter name="browser" value="chrome_headless"/>
+        <classes>
+                  <class name="com.automation.tests.SampleWikiSearchTest"/>
+            <class name="com.automation.tests.GitValidateUserRepoTest"/>
+
+        </classes>
+    </test> <!-- My Test -->
+</suite> <!-- My Suite -->
