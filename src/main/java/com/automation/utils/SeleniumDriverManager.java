@@ -43,7 +43,7 @@ public class SeleniumDriverManager extends WebDriverManager {
 
         Log.debug("Initializing Browser : " + browser.name());
 
-        System.setProperty("wdm.targetPath", "./target/webdrivers");
+//        System.setProperty("wdm.targetPath", "webdrivers");
         Log.debug("instance : "+Thread.currentThread().getName());
         switch (browser) {
 
@@ -51,6 +51,7 @@ public class SeleniumDriverManager extends WebDriverManager {
                 BrowserManager manager = WebDriverManager.getInstance(ChromeDriver.class).version(version).arch32();
                 manager.setup();
                 String browserPath = manager.getBinaryPath();
+                Log.debug("Driver path : " + browserPath);
 
                 System.setProperty("webdriver.chrome.driver", browserPath);
 
@@ -68,7 +69,7 @@ public class SeleniumDriverManager extends WebDriverManager {
                 BrowserManager manager = WebDriverManager.getInstance(ChromeDriver.class).version(version).arch32();
                 manager.setup();
                 String browserPath = manager.getBinaryPath();
-
+                Log.debug("Driver path : " + browserPath);
                 System.setProperty("webdriver.chrome.driver", browserPath);
 
                 HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
@@ -90,7 +91,7 @@ public class SeleniumDriverManager extends WebDriverManager {
                 BrowserManager manager = WebDriverManager.getInstance(FirefoxDriver.class).version(version).arch32();
                 manager.setup();
                 String browserPath = manager.getBinaryPath();
-
+                Log.debug("Driver path : " + browserPath);
                 System.setProperty("webdriver.gecko.driver", browserPath); // set geckodriver.exe
 
 //			DesiredCapabilities capabilities = DesiredCapabilities.firefox();
