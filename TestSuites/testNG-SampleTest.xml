@@ -9,6 +9,9 @@
         <parameter name="environment" value="DEV"/>
 
         <parameter name="browser" value="chrome_headless"/>
+<!--        <parameter name="browser" value="chrome"/>-->
+<!--        <parameter name="browser" value="firefox"/>-->
+
         <classes>
                   <class name="com.automation.tests.SampleWikiSearchTest"/>
             <class name="com.automation.tests.GitValidateUserRepoTest"/>
