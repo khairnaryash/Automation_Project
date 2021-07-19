@@ -1,11 +1,13 @@
 package com.automation.pageObjects.github;
 
+import com.automation.dataObject.UserRepoDetails;
 import com.automation.pageObjects.BasePage;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class UserRepositoriesPage extends BasePage {
@@ -23,14 +25,26 @@ public class UserRepositoriesPage extends BasePage {
         return name.equals(userName);
     }
 
-    public List<String> getUserPublicRepoList() {
+    public List<UserRepoDetails> getUserPublicRepoListAndDescription() {
 
-        List<WebElement> eList = getElementsInPage(Element.user_public_repo_names);
-        List<String> repoList = new ArrayList<>();
+        int count = getElementsInPage(Element.user_public_repo_names).size();
+        if (count < 1)
+            return null;
 
-        for (WebElement e : eList)
-            repoList.add(getText(e));
-
+        List<UserRepoDetails> repoList = new ArrayList<>();
+        String nameXpath = "(//div[@id=\"org-repositories\"]//li[contains(@class,'public')]//a[@itemprop=\"name codeRepository\"])[%d]";
+        String descriptionXpath = "(//div[@id=\"org-repositories\"]//li[contains(@class,'public')]//a[@itemprop=\"name codeRepository\"])[%d]/ancestor::div[@data-view-component=\"true\"]//p[@itemprop=\"description\"]";
+        for (int i = 1; i <= count; i++) {
+            String name = getText(By.xpath(String.format(nameXpath, i)));
+            By by = By.xpath(String.format(descriptionXpath, i));
+            String description = "";
+            if (checkIfElementPresent(by))
+                description = getText(by);
+            UserRepoDetails userRepoDetails = new UserRepoDetails();
+            userRepoDetails.setName(name);
+            userRepoDetails.setDescription(description);
+            repoList.add(userRepoDetails);
+        }
         return repoList;
 
     }

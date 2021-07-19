@@ -1,5 +1,6 @@
 package com.automation.services;
 
+import com.automation.dataObject.UserRepoDetails;
 import com.automation.reporter.ExtentReporter;
 import com.automation.reporter.customAssert.CustomAssert;
 import com.aventstack.extentreports.Status;
@@ -20,7 +21,7 @@ public class GitHubServices extends BaseServices {
         this.baseUrl = baseUrl;
     }
 
-    public List<String> getUserRepo(HashMap<String, String> testData) {
+    public List<UserRepoDetails> getUserRepo(HashMap<String, String> testData) {
         String user = testData.get("UserName");
         String endpoint = testData.get("Endpoint").replace("{UserName}", user);
 
@@ -38,10 +39,16 @@ public class GitHubServices extends BaseServices {
         JsonPath json = resp.getBody().jsonPath();
 
         List<Object> list = json.getList("");
-        ArrayList<String> repoList = new ArrayList<>();
+        List<UserRepoDetails> repoList = new ArrayList<>();
         for (Object o : list) {
             String name = ((LinkedHashMap) o).get("name").toString();
-            repoList.add(name);
+            String description = "";
+            if (((LinkedHashMap) o).get("description") != null)
+                description = ((LinkedHashMap) o).get("description").toString();
+            UserRepoDetails userRepoDetails = new UserRepoDetails();
+            userRepoDetails.setName(name);
+            userRepoDetails.setDescription(description);
+            repoList.add(userRepoDetails);
         }
 
         return repoList;

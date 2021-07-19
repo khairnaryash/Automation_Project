@@ -1,5 +1,6 @@
 package com.automation.tests;
 
+import com.automation.dataObject.UserRepoDetails;
 import com.automation.reporter.ExtentReporter;
 import com.automation.reporter.customAssert.CustomAssert;
 import com.automation.reporter.customAssert.CustomSoftAssert;
@@ -13,6 +14,7 @@ import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -35,21 +37,22 @@ public class GitValidateUserRepoTest extends BaseSeleniumTest {
 
         CustomAssert.assertTrue(userRepositoriesPage.validateUserName(testData.get("UserName")), "User repositories page open");
 
-        List<String> actualList = userRepositoriesPage.getUserPublicRepoList();
+        List<UserRepoDetails> actualList = userRepositoriesPage.getUserPublicRepoListAndDescription();
 
         Collections.sort(actualList);
 
         GitHubServices services = new GitHubServices(getProperty(testData.get("ServiceType") + ".baseUrl"));
 
-        List<String> expectedlList = services.getUserRepo(testData);
+        List<UserRepoDetails> expectedlList = services.getUserRepo(testData);
         Collections.sort(expectedlList);
 
         CustomAssert.assertEquals(actualList.size(), expectedlList.size(), "Repositories size");
         CustomSoftAssert softAssert = new CustomSoftAssert();
-        ExtentReporter.getTest().log(Status.INFO, "Validating repo name : ");
-        for (int i = 0; i < actualList.size(); i++)
-            softAssert.assertEquals(actualList.get(i), expectedlList.get(i));
-
+        ExtentReporter.getTest().log(Status.INFO, "Validating repo details : ");
+        for (int i = 0; i < actualList.size(); i++) {
+            softAssert.assertEquals(actualList.get(i).getName(), expectedlList.get(i).getName(),"Validating repo name");
+            softAssert.assertEquals(actualList.get(i).getDescription(), expectedlList.get(i).getDescription(),"Validating repo description for repo name : " +expectedlList.get(i).getName());
+        }
         softAssert.assertAll();
     }
 

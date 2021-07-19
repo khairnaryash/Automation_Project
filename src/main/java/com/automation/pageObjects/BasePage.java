@@ -63,6 +63,7 @@ public abstract class BasePage {
     protected String getText(By by) {
         return getText(getElementInPage(by));
     }
+
     public boolean isPageLoadingCompleted() {
         JavascriptExecutor Executor = (JavascriptExecutor) driver;
         return Executor.executeScript("return document.readyState").toString().equals("complete");
@@ -106,7 +107,7 @@ public abstract class BasePage {
 
         boolean clickable;
 
-        clickable = waitElementForExpectedCondition( timeOutInSec,
+        clickable = waitElementForExpectedCondition(timeOutInSec,
                 ExpectedConditions.elementToBeClickable(by));
 
         return clickable;
@@ -114,7 +115,7 @@ public abstract class BasePage {
 
 
     protected boolean waitElementForExpectedCondition(long timeOutInSec,
-                                                   ExpectedCondition<?> condition)  {
+                                                      ExpectedCondition<?> condition) {
         boolean flag = false;
 
         FluentWait<WebDriver> wait = new WebDriverWait(driver, timeOutInSec).pollingEvery(Duration.ofMillis(200));
@@ -128,4 +129,10 @@ public abstract class BasePage {
 
         return flag;
     }
+
+    protected boolean checkIfElementPresent(By by) {
+
+        return getElementsInPage(by).size() > 0;
+    }
+
 }
