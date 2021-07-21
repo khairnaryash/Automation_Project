@@ -4,12 +4,14 @@ import com.automation.Exceptions.InvalidValueException;
 import com.automation.enums.SupportedBrowser;
 import com.automation.reporter.Log;
 import org.openqa.selenium.WebDriver;
+import org.testng.ITestContext;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
 
-import java.lang.reflect.Method;
+import java.util.concurrent.TimeUnit;
+
 
 public class BaseSeleniumTest extends BaseTest {
     protected WebDriver driver;
@@ -35,22 +37,25 @@ public class BaseSeleniumTest extends BaseTest {
 
         }
 
-        Log.info("Initializing Browser : " + browser);
         String version = getProperty(String.format("selenium.%s.version", browser.toString().toLowerCase().replace("_headless", "")));
+        Log.info(String.format("Initializing Browser : %s , driver version : %s", browser, version));
+
         SeleniumDriverManager.initializeDriver(browser, version);
         driver = SeleniumDriverManager.getWebDriver();
-
+        try {
+            Long.valueOf(getOptionalProperty("selenium.implicitwait", "10"));
+        } catch (Exception e) {
+            throw new InvalidValueException("Please provide valid value for selenium.implicitwait");
+        }
+        driver.manage().timeouts().implicitlyWait(Long.valueOf(getOptionalProperty("selenium.implicitwait", "10")), TimeUnit.SECONDS);
     }
 
     @AfterMethod
-    public void afterMethod(Method method) {
-
-        Log.info("Test Method Completed :" + method.getName());
-        CommonHelper.takeScreenShot(driver, "TearDown_" + method.getName());
-
+    public void afterMethod(ITestContext testContext) {
+        Log.info("Test Method Completed :" + testContext.getName());
     }
 
-    @AfterMethod
+    @AfterMethod(alwaysRun = true)
     public void tearDownAfterTest() {
         Log.info("********* Closing Browser *********");
         driver.quit();

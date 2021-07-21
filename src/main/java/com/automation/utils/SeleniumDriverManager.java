@@ -44,7 +44,8 @@ public class SeleniumDriverManager {
         switch (browser) {
 
             case CHROME: {
-                WebDriverManager.chromedriver().setup();
+                WebDriverManager.chromedriver().arch32().version(version).setup();
+//                WebDriverManager.chromedriver().setup();
 
                 HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
 //		chromePrefs.put("download.default_directory", DOWNLOAD_DIR);
@@ -57,8 +58,8 @@ public class SeleniumDriverManager {
                 break;
             }
             case CHROME_HEADLESS: {
-
-                WebDriverManager.chromedriver().setup();
+                WebDriverManager.chromedriver().arch32().version(version).setup();
+//                WebDriverManager.chromedriver().setup();
 
                 HashMap<String, Object> chromePrefs = new HashMap<String, Object>();
 //		chromePrefs.put("download.default_directory", DOWNLOAD_DIR);

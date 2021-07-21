@@ -10,6 +10,7 @@ import org.testng.ITestContext;
 import org.testng.ITestListener;
 import org.testng.ITestResult;
 
+import java.io.File;
 import java.util.Map;
 
 public class ExtentReporter implements ITestListener {
@@ -56,16 +57,23 @@ public class ExtentReporter implements ITestListener {
 
     @Override
     public void onFinish(ITestContext iTestContext) {
+        Map<String, String> paraMap =   iTestContext.getCurrentXmlTest().getAllParameters();
+        for (String para : paraMap.keySet()) {
+
+            if (!para.equalsIgnoreCase("password")) {
+                extent.setSystemInfo(para, paraMap.get(para));
+            }
+        }
         extent.flush();
+        Log.info("********* Closing Reporter *********");
     }
 
-    public static void setupExtentReport(String reportFolderPath, Map<String, String> paraMap) {
+    public static void setupExtentReport(String reportFolderPath) {
 
         extentHTML = new ExtentHtmlReporter(reportFolderPath + "/ExecutionReport.html");
         extent = new ExtentReports();
 
         extent.attachReporter(extentHTML);
-
 
         extent.setSystemInfo("OS", "Windows 7");
         extent.setSystemInfo("Host Name", "Yashodeep-PC");
@@ -78,12 +86,7 @@ public class ExtentReporter implements ITestListener {
         extentHTML.config().setTestViewChartLocation(ChartLocation.TOP);
         extentHTML.config().setTheme(Theme.STANDARD);
 
-        for (String para : paraMap.keySet()) {
 
-            if (!para.equalsIgnoreCase("password")) {
-                extent.setSystemInfo(para, paraMap.get(para));
-            }
-        }
 
     }
 }

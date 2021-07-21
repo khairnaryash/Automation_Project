@@ -12,7 +12,7 @@ import java.util.HashMap;
 
 public class SampleWikiSearchTest extends BaseSeleniumTest {
 
-    @DataProvider(name = "simpleDataProvider",parallel = false)
+    @DataProvider(name = "simpleDataProvider")
     public Object[][] dataProvider() {
         return getDataFromTestDataFile("wiki_sample.xls", "Data");
     }

@@ -8,6 +8,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.events.WebDriverEventListener;
 
+import java.io.File;
 import java.util.Arrays;
 
 public class SeleniumEventListner implements WebDriverEventListener {
@@ -40,7 +41,7 @@ public class SeleniumEventListner implements WebDriverEventListener {
 
     @Override
     public void afterNavigateTo(String url, WebDriver driver) {
-        String path = addScreenShot(driver, "navigated_to" + driver.getTitle().replaceAll("[^0-9a-zA-Z:,]",""));
+        String path = addScreenShot(driver, "navigated_to" + driver.getTitle().hashCode());
         try {
             ExtentReporter.getTest().log(Status.PASS, "navigated_to: " + driver.getTitle() + " " + path);
         } catch (Exception e) {
@@ -89,7 +90,11 @@ public class SeleniumEventListner implements WebDriverEventListener {
 
     @Override
     public void beforeClickOn(WebElement element, WebDriver driver) {
-
+        String path = highlightElementAndTakeScreenShot(driver, element, "Clicking_on_Element" + element.hashCode());
+        try {
+            ExtentReporter.getTest().log(Status.PASS, "Clicked on element" + path);
+        } catch (Exception e) {
+        }
     }
 
     @Override
@@ -109,7 +114,7 @@ public class SeleniumEventListner implements WebDriverEventListener {
     @Override
     public void afterChangeValueOf(WebElement element, WebDriver driver, CharSequence[] keysToSend) {
         if (keysToSend != null && keysToSend.length > 0) {
-            String path = addScreenShot(driver, "entering_text_" + element.hashCode());
+            String path = highlightElementAndTakeScreenShot(driver, element, "entering_text_" + element.hashCode());
             try {
                 ExtentReporter.getTest().log(Status.PASS, "Entering text : " + Arrays.toString(keysToSend) + path);
             } catch (Exception e) {
@@ -139,7 +144,9 @@ public class SeleniumEventListner implements WebDriverEventListener {
 
     @Override
     public void onException(Throwable throwable, WebDriver driver) {
-
+        String path = addScreenShot(driver, "Error_Occurred");
+        ExtentReporter.getTest().log(Status.ERROR, "Error page screenshot: " + path);
+        ExtentReporter.getTest().log(Status.ERROR, "Error occurred : " + throwable.getMessage());
     }
 
     @Override
@@ -164,13 +171,34 @@ public class SeleniumEventListner implements WebDriverEventListener {
 
     private String addScreenShot(WebDriver driver, String name) {
         String temp = "";
+        name = name.replaceAll("[^0-9a-zA-Z]", "");
+        String folderName = ExtentReporter.getTest().getModel().getName().replaceAll("[^0-9a-zA-Z]", "");
+        File file = new File("Screenshots" + File.separator + folderName);
+        if (!file.exists())
+            file.mkdir();
+        name = folderName + File.separator + name;
         String imagePath = CommonHelper.takeScreenShot2(driver, name);
         if (null != imagePath) {
             temp = "<a onclick='this.href=this.childNodes[0].src' data-featherlight='image'>" + "<img src=\""
                     + imagePath + "\" width=100 height=60></a>";
-
         }
         return temp;
+    }
 
+    private String highlightElementAndTakeScreenShot(WebDriver driver, WebElement element, String name) {
+        String temp = "";
+        name = name.replaceAll("[^0-9a-zA-Z]", "");
+        String folderName = ExtentReporter.getTest().getModel().getName().replaceAll("[^0-9a-zA-Z]", "");
+        File file = new File("Screenshots" + File.separator + folderName);
+        if (!file.exists())
+            file.mkdir();
+        name = folderName + File.separator + name;
+        String imagePath = CommonHelper.highlightElementAndTakeScreenShot(driver, element, name);
+        if (null != imagePath) {
+            temp = "<a onclick='this.href=this.childNodes[0].src' data-featherlight='image'>" + "<img src=\""
+                    + imagePath + "\" width=100 height=60></a>";
+        }
+        return temp;
+//data:image/jpeg;base64,
     }
 }

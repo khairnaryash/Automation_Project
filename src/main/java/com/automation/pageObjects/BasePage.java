@@ -31,6 +31,8 @@ public abstract class BasePage {
     }
 
     protected WebElement getElementInPage(By by) {
+        waitTillPageLoading(10);
+        waitForElement(by,10);
         return driver.findElement(by);
     }
 
@@ -49,11 +51,8 @@ public abstract class BasePage {
     }
 
     public void ClickUsingJS(WebElement element) {
-
         JavascriptExecutor Executor = (JavascriptExecutor) driver;
-
         Executor.executeScript("arguments[0].click();", element);
-
     }
 
     protected String getText(WebElement e) {
@@ -61,6 +60,8 @@ public abstract class BasePage {
     }
 
     protected String getText(By by) {
+        waitTillPageLoading(10);
+        waitForElement(by,10);
         return getText(getElementInPage(by));
     }
 
@@ -93,7 +94,7 @@ public abstract class BasePage {
     }
 
 
-    protected boolean waitForElementToBeVisible(By by, long timeOutInSec) throws Exception {
+    protected boolean waitForElementToBeVisible(By by, long timeOutInSec)  {
 
         boolean visible;
 
@@ -103,7 +104,7 @@ public abstract class BasePage {
         return visible;
     }
 
-    protected boolean waitForElementToBeClickable(By by, long timeOutInSec) throws Exception {
+    protected boolean waitForElementToBeClickable(By by, long timeOutInSec) {
 
         boolean clickable;
 
@@ -116,7 +117,7 @@ public abstract class BasePage {
 
     protected boolean waitElementForExpectedCondition(long timeOutInSec,
                                                       ExpectedCondition<?> condition) {
-        boolean flag = false;
+        boolean flag;
 
         FluentWait<WebDriver> wait = new WebDriverWait(driver, timeOutInSec).pollingEvery(Duration.ofMillis(200));
         try {
@@ -133,6 +134,26 @@ public abstract class BasePage {
     protected boolean checkIfElementPresent(By by) {
 
         return getElementsInPage(by).size() > 0;
+    }
+
+    protected Boolean waitTillPageLoading(int timeOutInSec) {
+
+        Wait<WebDriver> wait = new FluentWait<WebDriver>(driver).withTimeout(Duration.ofSeconds(timeOutInSec))
+                .pollingEvery(Duration.ofMillis(500));
+        // .ignoring(NoSuchElementException.class); // either use try catch or use ignoring to ignore exception
+
+        Boolean loaded = wait.until(new Function<WebDriver, Boolean>() {
+
+            public Boolean apply(WebDriver driver) {
+                try {
+                    return isPageLoadingCompleted();
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+        });
+
+        return loaded;
     }
 
 }

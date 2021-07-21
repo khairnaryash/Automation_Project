@@ -4,6 +4,7 @@ import com.automation.reporter.ExtentReporter;
 import com.automation.reporter.Log;
 import com.aventstack.extentreports.Status;
 import org.testng.Assert;
+import org.testng.internal.EclipseInterface;
 
 import static org.testng.internal.EclipseInterface.*;
 
@@ -22,17 +23,34 @@ public class CustomAssert extends Assert {
         }
     }
 
-    static private void failNotEquals(Object actual, Object expected, String message) {
-        fail(format(actual, expected, message));
+    private static void assertEqualsImpl(Object actual, Object expected, String message) {
+        boolean equal = areEqualImpl(actual, expected);
+        if (!equal) {
+            failNotEquals(actual, expected, message);
+        }
+
     }
 
-    static String format(Object actual, Object expected, String message) {
+    private static boolean areEqualImpl(Object actual, Object expected) {
+        if (expected == null && actual == null) {
+            return true;
+        } else if (expected == null ^ actual == null) {
+            return false;
+        } else {
+            return expected.equals(actual) && actual.equals(expected);
+        }
+    }
+
+    private static void failNotEquals(Object actual, Object expected, String message) {
+        fail(format(actual, expected, message, true));
+    }
+    static String format(Object actual, Object expected, String message, boolean isAssertEquals) {
         String formatted = "";
         if (null != message) {
             formatted = message + " ";
         }
 
-        return formatted + ASSERT_LEFT + expected + ASSERT_MIDDLE + actual + ASSERT_RIGHT;
+        return isAssertEquals ? formatted + EclipseInterface.ASSERT_EQUAL_LEFT + expected + EclipseInterface.ASSERT_MIDDLE + actual + EclipseInterface.ASSERT_RIGHT : formatted + EclipseInterface.ASSERT_UNEQUAL_LEFT + expected + EclipseInterface.ASSERT_MIDDLE + actual + EclipseInterface.ASSERT_RIGHT;
     }
 
     public static void assertEquals(int actual, int expected) {

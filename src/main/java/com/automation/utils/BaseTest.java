@@ -4,12 +4,11 @@ import com.automation.Exceptions.FileNotFoundException;
 import com.automation.Exceptions.InvalidValueException;
 import com.automation.reporter.ExtentReporter;
 import com.automation.reporter.Log;
+import com.aventstack.extentreports.TestListener;
 import org.testng.ITest;
+import org.testng.ITestClass;
 import org.testng.ITestContext;
-import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.Parameters;
+import org.testng.annotations.*;
 
 import java.io.File;
 import java.io.InputStream;
@@ -19,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+@Listeners({ExtentReporter.class})
 public abstract class BaseTest implements ITest {
 
     public static String reportFolderPath = null;
@@ -40,21 +40,18 @@ public abstract class BaseTest implements ITest {
         new File(reportFolderPath + "/Screenshots").mkdirs();
 
         Log.setlogger(reportFolderPath);
-        Log.info("************* Log set up successfull **************");
+        Log.info("************* Log set up successfully **************");
 
         Log.debug("Report Folder : " + reportFolderPath);
 
-        Map<String, String> paraMap = context.getCurrentXmlTest().getAllParameters();
 
-        ExtentReporter.setupExtentReport(reportFolderPath,paraMap);
+        ExtentReporter.setupExtentReport(reportFolderPath);
 
     }
 
-
-
     @BeforeMethod
     public void setTestName(Object[] obj) {
-        HashMap<String, String> testData =   (HashMap<String, String>) obj[0];
+        HashMap<String, String> testData = (HashMap<String, String>) obj[0];
         if (testData.containsKey("TestCaseName") && !testData.get("TestCaseName").isEmpty())
             testName = testData.get("TestCaseName");
 
@@ -74,24 +71,15 @@ public abstract class BaseTest implements ITest {
 
     }
 
-   /* @BeforeMethod
-	public void beforeMethod( Method method){
+    @AfterClass(alwaysRun = true)
+    public void updateParametersList(ITestContext context){
+        HashMap<String, String> config = new HashMap<>();
+        for(String prop: properties.stringPropertyNames())
+            if(properties.get(prop)!=null)
+                config.put(prop,properties.getProperty(prop));
 
-		Log.info("********  Starting test case :" + method.getName());
-
-		ExtentReporter.createTest(method.getName());
-
-	}*/
-
-
-
-	
-	/*@AfterSuite
-	public void tearDownAfterSuite(ITestContext context)  {
-		Log.info("********* Clossing Reporter *********");
-		ExtentReporter.closeExtentReport();
-
-	}*/
+        context.getCurrentXmlTest().setParameters(config);
+    }
 
     public void loadProperties(String fileName) {
 
@@ -117,6 +105,10 @@ public abstract class BaseTest implements ITest {
             return properties.getProperty(key);
 
         throw new InvalidValueException(String.format("Property value %s not found in properties", key));
+    }
+
+    protected String getOptionalProperty(String key,String defaultVal) {
+        return properties.getProperty(key,defaultVal);
     }
 
     public Object[][] getDataFromTestDataFile(String fileName, String sheet) {

@@ -237,7 +237,7 @@ public class CommonHelper {
         try {
             FileUtils.moveFile(scrFile, scrShot);
         } catch (IOException e) {
-            Log.error("Unble to take screenshot ");
+            Log.error("Unable to take screenshot ");
             e.printStackTrace();
         }
 
@@ -257,6 +257,22 @@ public class CommonHelper {
             FileUtils.copyFile(scrFile, destFile);
         } catch (Exception e) {
         }
+        return path;
+    }
+
+    public static String takeScreenShot3(WebDriver driver) {
+
+        String scrFile = ((TakesScreenshot) driver).getScreenshotAs(OutputType.BASE64);
+
+        return scrFile;
+    }
+    public static String highlightElementAndTakeScreenShot(WebDriver driver, WebElement element, String mName) {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        String style = element.getAttribute("style");
+        js.executeScript("arguments[0].setAttribute('style', 'background: yellow; border: 2px solid red;');", element);
+        wait(1);
+        String path = takeScreenShot2(driver,mName);
+        js.executeScript(String.format("arguments[0].setAttribute('style','%s');", style), element);
         return path;
     }
 }

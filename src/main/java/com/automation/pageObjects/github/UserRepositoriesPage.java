@@ -22,7 +22,7 @@ public class UserRepositoriesPage extends BasePage {
 
     public boolean validateUserName(String userName) {
         String name = getText(Element.username_header);
-        return name.equals(userName);
+        return name.equalsIgnoreCase(userName);
     }
 
     public List<UserRepoDetails> getUserPublicRepoListAndDescription() {
@@ -51,7 +51,7 @@ public class UserRepositoriesPage extends BasePage {
 
 
     private static class Element {
-        static By username_header = By.xpath("//a[@class=\"Header-link\"]");
+        static By username_header = By.xpath("//header[contains(@class,'pagehead')]//h1");
         static By user_public_repo_names = By.xpath("//div[@id=\"org-repositories\"]//li[contains(@class,'public')]//a[@itemprop=\"name codeRepository\"]");
     }
 
